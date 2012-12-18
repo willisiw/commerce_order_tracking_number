@@ -90,6 +90,16 @@ function _commerce_order_tracking_number_shipper_list() {
 	return $shipperlist;
 }
 
+function _commerce_order_tracking_number_shipper_links() {
+  $shippers = array(
+    'UPS' => 'http://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=', 
+    'USPS' => 'https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=', 
+    'DHL' => 'http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=', 
+    'FEDEX' => 'http://www.fedex.com/Tracking?action=track&tracknumbers=', 
+  );
+	return $shippers;
+}
+
 function commerce_order_tracking_number_mail($order) {
   global $conf;
   // Make sure you have a good order.
