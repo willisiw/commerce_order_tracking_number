@@ -19,24 +19,23 @@ function commerce_order_tracking_number_admin_page() {
   $query->addField('t', 'tracking_id', 't_tracking_id');
   $query->addField('t', 'shipper_name', 't_shipper_name');
   $result = $query->execute();
-  
+
   foreach ($result as $row) {
     if (($row->status != "pending") && ($row->status != "completed")) {
       continue;
     }
-     
+
     $color = drupal_substr(MD5($row->order_id), 0, 6);
     $this_order = commerce_order_load($row->order_id);
     if (isset($this_order->commerce_customer_shipping['und']['0']['profile_id'])) {
       $this_user_profile = commerce_customer_profile_load($this_order->commerce_customer_shipping['und']['0']['profile_id']);
     }
-    
+
     $shipped = 'ADD TRACKING NUMBER';
     $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
-    
-    
+
     if ($row->t_tracking_id != '') {
-    
+
         $shipped = $row->t_tracking_id;
         $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
       
@@ -53,8 +52,7 @@ function commerce_order_tracking_number_admin_page() {
           $row->t_shipper_name ,
           $shiplink
     );
-    
-  
+
   }
   if (empty($rows)) {
     $rows[] = array(
@@ -98,27 +96,23 @@ function commerce_order_tracking_number_user_page() {
   $query->addField('t', 'ship_date', 't_ship_date');
   $query->addField('t', 'shipper_name', 't_shipper_name');
   $result = $query->execute();
- 
+
 
   foreach ($result as $row) {
     if (($row->status != "pending") && ($row->status != "completed")) {
       continue;
     }
 
-     
     $color = drupal_substr(MD5($row->order_id), 0, 6);
     $this_order = commerce_order_load($row->order_id);
     $this_user_profile =  commerce_customer_profile_load($this_order->commerce_customer_shipping['und']['0']['profile_id']);
     $shippeddate = "";
     if (isset($row->t_ship_date)) {
       $shippeddate = date("Y-m-d", $row->t_ship_date);
-      
     }
-     
 
     $shiplink =  t('No Tracking Info');
-    
-    
+
     if ($row->t_tracking_id != '') {
       if (isset($row->t_shipper_name) && $row->t_shipper_name != "") {
         $url = $shippers[$row->t_shipper_name] . $row->t_tracking_id;
@@ -141,8 +135,7 @@ function commerce_order_tracking_number_user_page() {
       $row->t_shipper_name,
       $shiplink,
     );
-    
-  
+
   }
   if (empty($rows)) {
     $rows[] = array(
@@ -154,16 +147,13 @@ function commerce_order_tracking_number_user_page() {
       '',
     );
   }
-    $header = array('Order ID', 'Ship To Address', 'Ship Date', 'Shipped With', 'Shipped');
-    // Format output.
-    $output = "<h4>Please read our <a href=\"/FAQ\">FAQ</a> before contacting us about a shippment.</h4>";
-    $output .= theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager');
+  $header = array('Order ID', 'Ship To Address', 'Ship Date', 'Shipped With', 'Shipped');
+  // Format output.
+  $output = "<h4>Please read our <a href=\"/FAQ\">FAQ</a> before contacting us about a shippment.</h4>";
+  $output .= theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager');
 
   return $output;
 }
-
-
-
 
 
 //  Shipping Form to add tracking number
@@ -245,10 +235,8 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
     '#submit' => array('commerce_order_tracking_form_submit'),
   );
 
-
   return $form;
 }
-
 
 
 // Submit function.
@@ -257,9 +245,6 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
     return;
   }
 
-  dpm($form);
-  dpm($form_state);
-  
   $logmessage = "";
   $setstatus = variable_get('commerce_order_tracking_number_status', "YES");
   $order_id = $form_state['values']['order_id'];
@@ -276,6 +261,10 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
     return;
   }
 
+  if ($tracking_id == $form['tracking']['tracking_id']['#value']) { 
+    // dpm('No Change in tracking number.');
+  }
+
   if ($tracking_id == '0') {
     $logmessage = t('Remove tracking number if any.');
     db_delete('commerce_order_tracking_number')
@@ -283,7 +272,6 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
       ->condition('tracking_id', $tracking_id)
       ->execute();
   }
-  //elseif ($tracking_id == '0') { }
   else {
     $logmessage = "Added $shippedwith tracking number $tracking_id to order number $order_id.";
     // Delete any existing tracking numbers.  
@@ -304,9 +292,9 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
       ))
       ->execute();
   }
-  
-  
-  
+
+
+
   if ($setstatus == "YES" && $logmessage != "") {
     $status_name = $this_order_status;
     if (($this_order->status == 'completed') && ($tracking_id == '0')) {

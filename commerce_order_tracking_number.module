@@ -87,7 +87,7 @@ function _commerce_order_tracking_number_shipper_list() {
     'FEDEX' => 'FEDEX', 
     'Other' => 'Other',
   );
-	return $shipperlist;
+  return $shipperlist;
 }
 
 function _commerce_order_tracking_number_shipper_links() {
@@ -97,7 +97,7 @@ function _commerce_order_tracking_number_shipper_links() {
     'DHL' => 'http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=', 
     'FEDEX' => 'http://www.fedex.com/Tracking?action=track&tracknumbers=', 
   );
-	return $shippers;
+  return $shippers;
 }
 
 function commerce_order_tracking_number_mail($order) {
