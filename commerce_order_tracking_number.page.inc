@@ -94,13 +94,9 @@ function commerce_order_tracking_number_admin_page() {
 function commerce_order_tracking_number_user_page() {
   // Tracking my orders
   global $user;
-  $build = array();
 
-	$ups_link = "http://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=";
-	$dhl_link = "http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=";
-	$usps_link = "https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=";
-	$fedex_link = "http://www.fedex.com/Tracking?action=track&tracknumbers=";
 
+  $shippers = _commerce_order_tracking_number_shipper_links();
   $query = db_select('commerce_order', 'c');
   $query
     ->fields('c')
@@ -120,11 +116,9 @@ function commerce_order_tracking_number_user_page() {
       continue;
     }
 
-    $offer = '';
      
     $color = drupal_substr(MD5($row->order_id), 0, 6);
     $this_order = commerce_order_load($row->order_id);
-    $this_user = user_load($row->uid);
     $this_user_profile =  commerce_customer_profile_load($this_order->commerce_customer_shipping['und']['0']['profile_id']);
     $shippeddate = "";
     if (isset($row->t_ship_date)) {
@@ -132,42 +126,46 @@ function commerce_order_tracking_number_user_page() {
       
     }
      
-    $shipped = 'Check Status';
-    $shiplink =  l($shipped, 'user/' . $user->uid . '/orders');
+
+    $shiplink =  t('No Tracking Info');
     
     
     if ($row->t_tracking_id != '') {
-    
-      $shipped = $row->t_tracking_id;
-      $shiplink =  l($shipped, 'http://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=' . $row->t_tracking_id);
-      
+      if (isset($row->t_shipper_name) && $row->t_shipper_name != "") {
+        $url = $shippers[$row->t_shipper_name] . $row->t_tracking_id;
+      }
+      else {
+        $url = "#";  
+      }
+
+      dpm($url);
+      $shiplink =  l($row->t_tracking_id, $url);
     }
 
     $rows[] = array(
-          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .  
-          l($this_order->order_id, 'user/' . $user->uid . '/orders/' . $this_order->order_id),
-          l($this_order->mail, 'user/' . $this_order->uid),
-          $this_user_profile->commerce_customer_address['und']['0']['locality'] . ', ' .
-          $this_user_profile->commerce_customer_address['und']['0']['administrative_area'] . ' ' .
-          $this_user_profile->commerce_customer_address['und']['0']['postal_code'],
-          $shippeddate,
-          $row->t_shipper_name,
-          $shiplink,
+      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .  
+      l($this_order->order_id, 'user/' . $user->uid . '/orders/' . $this_order->order_id),
+      $this_user_profile->commerce_customer_address['und']['0']['locality'] . ', ' .
+      $this_user_profile->commerce_customer_address['und']['0']['administrative_area'] . ' ' .
+      $this_user_profile->commerce_customer_address['und']['0']['postal_code'],
+      $shippeddate,
+      $row->t_shipper_name,
+      $shiplink,
     );
     
   
   }
   if (empty($rows)) {
     $rows[] = array(
-          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#666666"></div>',
-          'No orders have tracking numbers, or you have no active orders.',
-          '',
-          '',
-          '',
-          '',
+      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#777777"></div>',
+      'No orders have tracking numbers, or you have no active orders.',
+      '',
+      '',
+      '',
+      '',
     );
   }
-    $header = array('Order ID', 'Customer', 'Ship To', 'Ship Date', 'Shipped With', 'Shipped');
+    $header = array('Order ID', 'Ship To Address', 'Ship Date', 'Shipped With', 'Shipped');
     // Format output.
     $output = "<h4>Please read our <a href=\"/FAQ\">FAQ</a> before contacting us about a shippment.</h4>";
     $output .= theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager');
