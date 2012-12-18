@@ -15,7 +15,11 @@ function commerce_order_tracking_number_install() {
  * Implements hook_uninstall().
  */
 function commerce_order_tracking_number_uninstall() {
-	
+	 db_delete('variable')
+    ->condition('name', "commerce_order_tracking_number%", "LIKE")
+    ->execute();
+
+  cache_clear_all('variables', 'cache_bootstrap');
 }
 
 

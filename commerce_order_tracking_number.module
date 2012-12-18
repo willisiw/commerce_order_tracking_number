@@ -50,9 +50,9 @@ function commerce_order_tracking_number_menu() {
   );
 
   // Module settings.
-  $items['admin/config/commerce_order_tracking_number'] = array(
-    'title' => 'Order Tracking Config',
-    'description' => 'Module Admin Configuration',
+  $items['admin/commerce/config/commerce_order_tracking'] = array(
+    'title' => 'Order Tracking',
+    'description' => 'Commerce Order Tracking module configuration.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('commerce_order_tracking_number_admin_settings'),
     'access arguments' => array('access administration pages'),

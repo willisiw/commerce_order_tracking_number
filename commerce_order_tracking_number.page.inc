@@ -185,20 +185,17 @@ function commerce_order_tracking_number_user_page() {
 //  admin/commerce/orders/%order_id/ship
 //
 function commerce_order_tracking_form($form, &$form_state, $order) {
-  global $base_url;
 
   if (!isset($order->order_id)) {
     drupal_set_message('Order is not set.');
     return;
   }
 
-  $this_order = $order;
   $order_id = $order->order_id;
   $uid = $order->uid;
   $tracking_id = "";
   $user = user_load($uid);
-  $today = strtotime('today');
-  $datestr = date("Y-m-d", $today);
+  $ship_date = strtotime('today');
   $shipperlist = _commerce_order_tracking_number_shipper_list();
 
   $query = db_select('commerce_order_tracking_number', 't');
@@ -220,10 +217,9 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
   }
 
   $form['tracking']['content'] = array(
-      '#title' => t('Tracking'),
-      '#type' => 'markup',
-    
-      '#markup' =>  '<div><h3>' . $shipinfo . '</h3></div>',
+    '#title' => t('Tracking'),
+    '#type' => 'markup',
+    '#markup' =>  '<div><h3>' . $shipinfo . '</h3></div>',
   );
   $form['tracking']['order_id'] = array(
     '#type' => 'value',
@@ -235,24 +231,24 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
     '#title' => t('Tracking Number'),
     '#description' => t('Enter 0 to delete the tracking item.'),
     '#required' => TRUE,
-    '#size' => 30,
+    '#size' => 40,
     '#maxlength' => 128,
     '#default_value' => $tracking_id,
   );
-  $options =  array('UPS' => 'UPS');
   $form['tracking']['shippedwith'] = array(
     '#type' => 'select',
     '#title' => t('Shipped With'),
     '#options' => $shipperlist,
-    '#default_value' => variable_get('commerce_order_tracking_number_shipper', $shipperlist['UPS']),
+    '#default_value' => variable_get('commerce_order_tracking_number_shipper', 'UPS'),
     '#description' => t('Shipped with this carrier.'),
   );
   $form['tracking']['ship_date'] = array(
     '#type' => 'textfield',
     '#title' => t('Ship Date'),
-    '#description' => t('Date the order shipped.'),
+    '#description' => t('Date the order shipped.') . " YYYY-MM-DD",
+    '#size' => 30,
     '#required' => TRUE,
-    '#default_value' => $datestr,
+    '#default_value' => date("Y-m-d", $ship_date),
   );
 
    $form['submit'] = array(
@@ -274,7 +270,7 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
   }
 
   $logmessage = "";
-
+  $setstatus = variable_get('commerce_order_tracking_number_status', "YES");
   $order_id = $form_state['values']['order_id'];
   $tracking_id = $form_state['values']['tracking_id'];
   $shippedwith = $form_state['values']['shippedwith'];
@@ -294,10 +290,6 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
     db_delete('commerce_order_tracking_number')
       ->condition('order_id', $order_id)
       ->execute();
-
-    if ($this_order->status == 'completed') {
-      $status_name = 'pending';
-    }
   }
   else {
     $logmessage = "Added $shippedwith tracking number $tracking_id to order number $order_id.";
@@ -317,13 +309,23 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
         'shipper_name' => $shippedwith,
       ))
       ->execute();
-    if ($this_order->status == 'pending') {
+  }
+  
+  
+  if ($setstatus == "YES" && $logmessage != "") {
+    if (($this_order->status == 'completed') && ($tracking_id == '0')) {
+      $status_name = 'pending';
+    }
+    if (($this_order->status == 'pending') && ($tracking_id != '0')) {
       $status_name = 'completed';
     }
-
+    commerce_order_status_update($this_order, $status_name, FALSE, TRUE, $logmessage);
+    drupal_set_message("Status changed to $status_name for order $this_order->order_id");
+  }
+  else {
+    drupal_set_message("Status not changed for order $this_order->order_id");
   }
 
-  commerce_order_status_update($this_order, $status_name, FALSE, TRUE, $logmessage);
   // commerce_order_tracking_number_mail($this_order)
 
   drupal_goto('admin/commerce/orders/tracking');
