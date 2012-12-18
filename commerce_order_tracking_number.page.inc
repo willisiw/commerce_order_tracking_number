@@ -121,7 +121,6 @@ function commerce_order_tracking_number_user_page() {
         $url = "#";  
       }
 
-      dpm($url);
       $shiplink =  l($row->t_tracking_id, $url);
     }
 

@@ -161,7 +161,7 @@ function commerce_order_tracking_number_mail($order) {
   $headers .= "Return-Path: <" . $conf['site_mail'] . ">\n";  
 
   if(mail($mailto, $subject, $content, $headers) == false) {
-      //Error
+      // Error.
   }
     
 }
