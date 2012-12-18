@@ -1,0 +1,15 @@
+; $Id$
+; Read more about Drupal 7 .info files here: http://drupal.org/node/542202
+name = "Commerce Order Tracking"
+description = "This module adds a few pages for adding a tracking number for an order.  A user tab will display for the user who placed the order."
+package = z Commerce
+core = 7.x
+php = 5.1
+version = 7.x-1.1
+configure = admin/config/commerce_order_tracking
+files[] = commerce_order_tracking_number.install
+files[] = commerce_order_tracking_number.module
+files[] = commerce_order_tracking_number.admin.inc
+files[] = commerce_order_tracking_number.page.inc
+
+

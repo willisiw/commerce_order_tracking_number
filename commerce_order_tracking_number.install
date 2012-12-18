@@ -1,0 +1,58 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Install file for Dibs module.
+ *
+ */
+ 
+function commerce_order_tracking_number_install() {
+	
+}
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function commerce_order_tracking_number_uninstall() {
+	
+}
+
+
+/**
+ * Implements hook_schema().
+ */
+function commerce_order_tracking_number_schema() {
+  $schema['commerce_order_tracking_number'] = array(
+    'description' => 'Order ID',
+    'fields' => array(
+     'order_id' => array(
+        'description' => 'Order ID of the order to be tracked.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+     'tracking_id' => array(
+        'description' => 'Tracking numnber for the order',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+     'ship_date' => array(
+        'description' => 'Shipping Date for the order',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+     'shipper_name' => array(
+        'description' => 'Name of the Shipper used.',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'User ID of the customer',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('order_id'),
+  );
+  return $schema;
+}

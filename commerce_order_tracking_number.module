@@ -1,0 +1,157 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Demonstrate basic module scaffolding.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function commerce_order_tracking_number_menu() {
+  // Order Tracking Settings.
+  $items['admin/commerce/orders/tracking'] = array(
+    'title' => 'Track Orders',
+    'description' => 'Order Tracking Management',
+    'page callback' => 'commerce_order_tracking_number_admin_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'commerce_order_tracking_number.page.inc',
+    'file path' => drupal_get_path('module', 'commerce_order_tracking_number'),
+    'weight' => 7,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+
+  // Individual Order form used to add a tracking number to an order.
+  $items['admin/commerce/orders/%commerce_order/track'] = array(
+    'title' => 'Track Order',
+    'description' => 'Add Order Tracking Number',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_order_tracking_form', 3),
+    'access arguments' => array('access administration pages'),
+    'file' => 'commerce_order_tracking_number.page.inc',
+    'file path' => drupal_get_path('module', 'commerce_order_tracking_number'),
+    'weight' => 15,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+
+  // User page to see orders.
+  $items['user/%user/order_tracking'] = array(
+    'title' => 'Track Orders',
+    'description' => 'User Order Tracking.',
+    'page callback' => 'commerce_order_tracking_number_user_page',
+    'access arguments' => array('access content'),
+    'file' => 'commerce_order_tracking_number.page.inc',
+    'file path' => drupal_get_path('module', 'commerce_order_tracking_number'),
+    'weight' => 5,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  // Module settings.
+  $items['admin/config/commerce_order_tracking_number'] = array(
+    'title' => 'Order Tracking Config',
+    'description' => 'Module Admin Configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_order_tracking_number_admin_settings'),
+    'access arguments' => array('access administration pages'),
+    'file' => 'commerce_order_tracking_number.admin.inc',
+    'file path' => drupal_get_path('module', 'commerce_order_tracking_number'),
+  );
+  
+  return $items;
+}
+
+
+/**
+ * Implements hook_help().
+ */
+function commerce_order_tracking_number_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/commerce_order_tracking_number':
+      return t('This is some help text for the commerce_order_tracking_number settings page.');
+
+    case 'admin/help#commerce_order_tracking_number':
+      $output = '<p>' . t('This is help text for the commerce_order_tracking_number help page') . '</p>';
+      return $output;
+  }
+}
+
+
+function _commerce_order_tracking_number_shipper_list() {
+  $shipperlist = array(
+    'UPS' => 'UPS', 
+    'USPS' => 'USPS', 
+    'DHL' => 'DHL', 
+    'FEDEX' => 'FEDEX', 
+    'Other' => 'Other',
+  );
+	return $shipperlist;
+}
+
+function commerce_order_tracking_number_mail($order) {
+  global $conf;
+  // Make sure you have a good order.
+  if (is_int($order)) {
+    $order = commerce_order_load($order);
+  }
+  elseif (is_object($order)) {
+    // Proceede.
+  }
+  else {
+    // No order given.
+    return;
+  }
+  
+  $cssfile = drupal_get_path('module', 'commerce_order') . '/theme/commerce_order.theme.css';
+  $view_mode = 'customer';
+  $htmlString = drupal_render(entity_view('commerce_order', array($order->order_id => $order), $view_mode, NULL, TRUE));
+
+  // Remove unwanted html.
+  $dom = new DOMDocument;
+  $dom->loadHTML($htmlString);
+  $xPath = new DOMXPath($dom);
+  $nodes = $xPath->query('//*[@class="view-footer"]');
+  if($nodes->item(0)) {
+      $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+  }
+  $nodes = $xPath->query('//*[@class="contextual-links-wrapper"]');
+  if($nodes->item(0)) {
+      $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+  }
+  $nodes = $xPath->query('//*[@class="field commerce-backoffice-order-status-form"]');
+  if($nodes->item(0)) {
+      $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+  }
+  $nodes = $xPath->query('//*[@class="contextual-links-wrapper"]');
+  if($nodes->item(0)) {
+      $nodes->item(0)->parentNode->removeChild($nodes->item(0));
+  }
+
+  $content = $dom->saveHTML();
+  
+  // drupal_set_message($content);
+
+  
+  
+  if ($content === false) {
+    $content = "";
+  }
+  $subject = "Order $order->order_id at {$conf['site_name']} has been updated.";
+  $mailto = $conf['site_mail'];
+  
+  $headers  = "MIME-Version: 1.0\n";
+  $headers .= "Content-type: text/html; charset=iso-8859-1\n";
+  $headers .= "From: " . $conf['site_name'] . " <" . $conf['site_mail'] . ">\n";
+  $headers .= "Reply-To: " . $conf['site_mail'] . "\n";
+  $headers .= "X-Sender: <" . $conf['site_mail'] . ">\n";
+  $headers .= "X-Mailer: PHP\n"; 
+  $headers .= "X-Priority: 1\n"; 
+  $headers .= "Return-Path: <" . $conf['site_mail'] . ">\n";  
+
+  if(mail($mailto, $subject, $content, $headers) == false) {
+      //Error
+  }
+    
+}
