@@ -28,11 +28,9 @@ function commerce_order_tracking_number_admin_page() {
     if (($row->status != "pending") && ($row->status != "completed")) {
       continue;
     }
-    $offer = '';
      
     $color = drupal_substr(MD5($row->order_id), 0, 6);
     $this_order = commerce_order_load($row->order_id);
-    $this_user = user_load($row->uid);
     if (isset($this_order->commerce_customer_shipping['und']['0']['profile_id'])) {
       $this_user_profile = commerce_customer_profile_load($this_order->commerce_customer_shipping['und']['0']['profile_id']);
     }
@@ -49,7 +47,7 @@ function commerce_order_tracking_number_admin_page() {
     if ($row->t_tracking_id != '') {
     
         $shipped = $row->t_tracking_id;
-        $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id);
+        $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
       
     }
 
@@ -314,7 +312,7 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
   
   
   if ($setstatus == "YES" && $logmessage != "") {
-
+    $status_name = $this_order_status;
     if (($this_order->status == 'completed') && ($tracking_id == '0')) {
       $status_name = 'pending';
     }
