@@ -7,10 +7,7 @@
 // Store admin page for creating an order tracking number.
 // /?q=admin/commerce/orders/tracking page.
 function commerce_order_tracking_number_admin_page() {
-  // Tracking my orders
-  global $user;
-  $build = array();
-  
+  // Tracking my orders  
   $query = db_select('commerce_order', 'c');
   $query
     ->fields('c')
@@ -22,8 +19,7 @@ function commerce_order_tracking_number_admin_page() {
   $query->addField('t', 'tracking_id', 't_tracking_id');
   $query->addField('t', 'shipper_name', 't_shipper_name');
   $result = $query->execute();
- 
-
+  
   foreach ($result as $row) {
     if (($row->status != "pending") && ($row->status != "completed")) {
       continue;
@@ -34,12 +30,7 @@ function commerce_order_tracking_number_admin_page() {
     if (isset($this_order->commerce_customer_shipping['und']['0']['profile_id'])) {
       $this_user_profile = commerce_customer_profile_load($this_order->commerce_customer_shipping['und']['0']['profile_id']);
     }
-    else {
-      // No user.
-    }
     
-    
-     
     $shipped = 'ADD TRACKING NUMBER';
     $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
     
@@ -266,6 +257,9 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
     return;
   }
 
+  dpm($form);
+  dpm($form_state);
+  
   $logmessage = "";
   $setstatus = variable_get('commerce_order_tracking_number_status', "YES");
   $order_id = $form_state['values']['order_id'];
@@ -289,10 +283,12 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
       ->condition('tracking_id', $tracking_id)
       ->execute();
   }
+  //elseif ($tracking_id == '0') { }
   else {
     $logmessage = "Added $shippedwith tracking number $tracking_id to order number $order_id.";
-    // Delete any existing tracking numbers.  This will need
-    // to be removed to allow multiple packages.
+    // Delete any existing tracking numbers.  
+    // This will need to be removed to allow multiple packages.
+    // TODO Figure out how to allow multiple packages per order.
     db_delete('commerce_order_tracking_number')
       ->condition('order_id', $order_id)
       ->execute();
