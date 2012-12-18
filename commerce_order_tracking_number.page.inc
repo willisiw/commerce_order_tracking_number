@@ -227,17 +227,18 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
   $form['tracking']['tracking_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Tracking Number'),
-    '#description' => t('Enter 0 to delete the tracking item.'),
+    '#description' => t('Enter 0 to delete this tracking number item.  Enter a new number to add a new tracking item.'),
     '#required' => TRUE,
     '#size' => 40,
     '#maxlength' => 128,
     '#default_value' => $tracking_id,
   );
+  $this_shipper = (isset($shippedwith)) ? $shippedwith : variable_get('commerce_order_tracking_number_shipper', 'UPS');
   $form['tracking']['shippedwith'] = array(
     '#type' => 'select',
     '#title' => t('Shipped With'),
     '#options' => $shipperlist,
-    '#default_value' => variable_get('commerce_order_tracking_number_shipper', 'UPS'),
+    '#default_value' => $this_shipper,
     '#description' => t('Shipped with this carrier.'),
   );
   $form['tracking']['ship_date'] = array(
@@ -276,7 +277,7 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
 
   $this_order = commerce_order_load($order_id);
   $uid = $this_order->uid;
-  $status_name = $this_order->status;
+  $this_order_status = $this_order->status;
 
   if ($order_id == '') {
     drupal_set_message('No order id given to form submit.');
@@ -287,6 +288,7 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
     $logmessage = t('Remove tracking number if any.');
     db_delete('commerce_order_tracking_number')
       ->condition('order_id', $order_id)
+      ->condition('tracking_id', $tracking_id)
       ->execute();
   }
   else {
@@ -310,18 +312,19 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
   }
   
   
+  
   if ($setstatus == "YES" && $logmessage != "") {
+
     if (($this_order->status == 'completed') && ($tracking_id == '0')) {
       $status_name = 'pending';
     }
-    if (($this_order->status == 'pending') && ($tracking_id != '0')) {
+    elseif (($this_order->status == 'pending') && ($tracking_id != '0')) {
       $status_name = 'completed';
     }
-    commerce_order_status_update($this_order, $status_name, FALSE, TRUE, $logmessage);
-    drupal_set_message("Status changed to $status_name for order $this_order->order_id");
-  }
-  else {
-    drupal_set_message("Status not changed for order $this_order->order_id");
+    if ($this_order_status != $status_name) {
+      commerce_order_status_update($this_order, $status_name, FALSE, TRUE, $logmessage);
+      drupal_set_message("Status changed to $status_name for order $this_order->order_id");
+    }
   }
 
   // commerce_order_tracking_number_mail($this_order)
