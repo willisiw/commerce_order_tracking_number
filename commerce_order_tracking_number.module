@@ -73,8 +73,8 @@ function commerce_order_tracking_number_help($path, $arg) {
       return t('This is some help text for the commerce_order_tracking_number settings page.');
 
     case 'admin/help#commerce_order_tracking_number':
-      $output = '<p>' . t('This is help text for the commerce_order_tracking_number help page') . '</p>';
-      return $output;
+      $helptxt = check_markup(file_get_contents(dirname(__FILE__) . "/README.txt"));
+      return $helptxt;
   }
 }
 

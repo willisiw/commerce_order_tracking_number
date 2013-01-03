@@ -56,8 +56,8 @@ function commerce_order_tracking_number_admin_page() {
   }
   if (empty($rows)) {
     $rows[] = array(
-          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#666666"></div>',
-          'No orders have tracking numbers, or you have no active orders.',
+          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#676767"></div>',
+          t('No orders have tracking numbers, or you have no active orders.'),
           '',
           '',
           '',
@@ -66,7 +66,7 @@ function commerce_order_tracking_number_admin_page() {
   }
     $header = array('Order ID', 'Customer', 'Ship To', 'Updated', 'Shipped With', 'Shipped');
     // Format output.
-    $output = "<h4>To select a person that will receive your hand-me-down items, click in the offer column to make an offer.</h4>";
+    $output = t('<h4>To add tracking info click the link in the Shipped column.</h4>');
     $output .= theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager');
 
   return $output;
@@ -139,7 +139,7 @@ function commerce_order_tracking_number_user_page() {
   if (empty($rows)) {
     $rows[] = array(
       '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#777777"></div>',
-      'No orders have tracking numbers, or you have no active orders.',
+      t('No orders have tracking numbers, or you have no active orders.'),
       '',
       '',
       '',
@@ -148,7 +148,7 @@ function commerce_order_tracking_number_user_page() {
   }
   $header = array('Order ID', 'Ship To Address', 'Ship Date', 'Shipped With', 'Shipped');
   // Format output.
-  $output = "<h4>Please read our <a href=\"/FAQ\">FAQ</a> before contacting us about a shippment.</h4>";
+  $output = t('<h4>Please read our <a href=\"/FAQ\">FAQ</a> before contacting us about a shippment.</h4>');
   $output .= theme('table', array('header' => $header, 'rows' => $rows)) . theme('pager');
 
   return $output;
