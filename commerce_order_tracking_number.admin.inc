@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Admin page callback for the scaffolding module.
@@ -22,7 +20,6 @@ function commerce_order_tracking_number_admin_settings() {
       '#markup' => $helptxt,
       '#suffix' => '</div>',
   );
-
 
   $shipperlist = _commerce_order_tracking_number_shipper_list();
   $form['commerce_order_tracking_number_shipper'] = array(

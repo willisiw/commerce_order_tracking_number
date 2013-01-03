@@ -72,7 +72,6 @@ function commerce_order_tracking_number_admin_page() {
   return $output;
 }
 
-
 // User page to see orders.
 // commerce_order_tracking_number_page function
 //
@@ -81,7 +80,6 @@ function commerce_order_tracking_number_admin_page() {
 function commerce_order_tracking_number_user_page() {
   // Tracking my orders
   global $user;
-
 
   $shippers = _commerce_order_tracking_number_shipper_links();
   $query = db_select('commerce_order', 'c');
@@ -96,7 +94,6 @@ function commerce_order_tracking_number_user_page() {
   $query->addField('t', 'ship_date', 't_ship_date');
   $query->addField('t', 'shipper_name', 't_shipper_name');
   $result = $query->execute();
-
 
   foreach ($result as $row) {
     if (($row->status != "pending") && ($row->status != "completed")) {
@@ -154,13 +151,12 @@ function commerce_order_tracking_number_user_page() {
   return $output;
 }
 
-
 //  Shipping Form to add tracking number
 //
 //
 //  admin/commerce/orders/%order_id/ship
 //
-function commerce_order_tracking_form($form, &$form_state, $order) {
+function commerce_order_tracking_number_form($form, &$form_state, $order) {
 
   if (!isset($order->order_id)) {
     drupal_set_message('Order is not set.');
@@ -179,7 +175,6 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
     ->fields('t')
     ->condition('t.order_id', $order_id, '=');
   $result = $query->execute();
-
 
   foreach ($result as $row) {
     $tracking_id = $row->tracking_id;
@@ -231,15 +226,14 @@ function commerce_order_tracking_form($form, &$form_state, $order) {
    $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-    '#submit' => array('commerce_order_tracking_form_submit'),
+    '#submit' => array('commerce_order_tracking_number_form_submit'),
   );
 
   return $form;
 }
 
-
 // Submit function.
-function commerce_order_tracking_form_submit($form, &$form_state) {
+function commerce_order_tracking_number_form_submit($form, &$form_state) {
   if (!user_access('administer content')) {
     return;
   }
@@ -291,8 +285,6 @@ function commerce_order_tracking_form_submit($form, &$form_state) {
       ))
       ->execute();
   }
-
-
 
   if ($setstatus == "YES" && $logmessage != "") {
     $status_name = $this_order_status;

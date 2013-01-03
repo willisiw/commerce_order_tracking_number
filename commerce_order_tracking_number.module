@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Demonstrate basic module scaffolding.
@@ -22,7 +20,6 @@ function commerce_order_tracking_number_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-
   // Individual Order form used to add a tracking number to an order.
   $items['admin/commerce/orders/%commerce_order/track'] = array(
     'title' => 'Track Order',
@@ -35,7 +32,6 @@ function commerce_order_tracking_number_menu() {
     'weight' => 15,
     'type' => MENU_LOCAL_TASK,
   );
-
 
   // User page to see orders.
   $items['user/%user/order_tracking'] = array(
@@ -63,7 +59,6 @@ function commerce_order_tracking_number_menu() {
   return $items;
 }
 
-
 /**
  * Implements hook_help().
  */
@@ -77,7 +72,6 @@ function commerce_order_tracking_number_help($path, $arg) {
       return $helptxt;
   }
 }
-
 
 function _commerce_order_tracking_number_shipper_list() {
   $shipperlist = array(

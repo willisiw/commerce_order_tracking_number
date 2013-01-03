@@ -1,15 +1,9 @@
 <?php
-// $Id$
 /**
  * @file
  * Install file for Dibs module.
  *
  */
- 
-function commerce_order_tracking_number_install() {
-  
-}
-
 
 /**
  * Implements hook_uninstall().
@@ -21,7 +15,6 @@ function commerce_order_tracking_number_uninstall() {
 
   cache_clear_all('variables', 'cache_bootstrap');
 }
-
 
 /**
  * Implements hook_schema().
