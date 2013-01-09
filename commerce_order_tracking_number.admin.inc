@@ -1,11 +1,11 @@
 <?php
 /**
  * @file
- * Admin page callback for the scaffolding module.
+ * Admin page callback for the commerce order tracking number module.
  */
 
 /**
- * Builds and returns the scaffolding settings form.
+ * Builds and returns the commerce order tracking number settings form.
  */
 function commerce_order_tracking_number_admin_settings() {
   $helptxt = '';

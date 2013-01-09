@@ -4,8 +4,11 @@
  * commerce_order_tracking_number.
  */
 
-// Store admin page for creating an order tracking number.
-// /?q=admin/commerce/orders/tracking page.
+/**
+ * Store admin page for creating an order tracking number.
+ * 
+ * /?q=admin/commerce/orders/tracking page.
+ */
 function commerce_order_tracking_number_admin_page() {
   // Tracking my orders  
   $query = db_select('commerce_order', 'c');
@@ -72,11 +75,11 @@ function commerce_order_tracking_number_admin_page() {
   return $output;
 }
 
-// User page to see orders.
-// commerce_order_tracking_number_page function
-//
-//  user/%userid/order_tracking
-//
+/**
+ * User page to see orders with tracking numbers.
+ * 
+ * /?q=user/%userid/order_tracking
+ */
 function commerce_order_tracking_number_user_page() {
   // Tracking my orders
   global $user;
@@ -151,11 +154,11 @@ function commerce_order_tracking_number_user_page() {
   return $output;
 }
 
-//  Shipping Form to add tracking number
-//
-//
-//  admin/commerce/orders/%order_id/ship
-//
+/**
+ * Shipping Form to add a single tracking number.
+ * 
+ * /?q=admin/commerce/orders/%order_id/ship
+ */
 function commerce_order_tracking_number_form($form, &$form_state, $order) {
 
   if (!isset($order->order_id)) {
@@ -232,7 +235,9 @@ function commerce_order_tracking_number_form($form, &$form_state, $order) {
   return $form;
 }
 
-// Submit function.
+/**
+ * Shipping Form submit function.
+ */
 function commerce_order_tracking_number_form_submit($form, &$form_state) {
   if (!user_access('administer content')) {
     return;

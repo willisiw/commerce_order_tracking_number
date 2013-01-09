@@ -1,7 +1,11 @@
 <?php
 /**
  * @file
- * Demonstrate basic module scaffolding.
+ * Commerce Order Tracking Module.
+ * 
+ * This module allows a Drupal Commerce admin to add a single package
+ * tracking number to a Commerce order.  The customer user will have
+ * a page displaying a list of their tracking numbers.
  */
 
 /**
