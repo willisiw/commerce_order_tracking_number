@@ -1,8 +1,8 @@
 <?php
 /**
  * @file
- * Commerce Order Tracking Module.
- * 
+ * Commerce Order Tracking Number Module.
+ *
  * This module allows a Drupal Commerce admin to add a single package
  * tracking number to a Commerce order.  The customer user will have
  * a page displaying a list of their tracking numbers.
@@ -59,7 +59,7 @@ function commerce_order_tracking_number_menu() {
     'file' => 'commerce_order_tracking_number.admin.inc',
     'file path' => drupal_get_path('module', 'commerce_order_tracking_number'),
   );
-  
+
   return $items;
 }
 
@@ -79,10 +79,10 @@ function commerce_order_tracking_number_help($path, $arg) {
 
 function _commerce_order_tracking_number_shipper_list() {
   $shipperlist = array(
-    'UPS' => 'UPS', 
-    'USPS' => 'USPS', 
-    'DHL' => 'DHL', 
-    'FEDEX' => 'FEDEX', 
+    'UPS' => 'UPS',
+    'USPS' => 'USPS',
+    'DHL' => 'DHL',
+    'FEDEX' => 'FEDEX',
     'Other' => 'Other',
   );
   return $shipperlist;
@@ -90,10 +90,10 @@ function _commerce_order_tracking_number_shipper_list() {
 
 function _commerce_order_tracking_number_shipper_links() {
   $shippers = array(
-    'UPS' => 'http://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=', 
-    'USPS' => 'https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=', 
-    'DHL' => 'http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=', 
-    'FEDEX' => 'http://www.fedex.com/Tracking?action=track&tracknumbers=', 
+    'UPS' => 'http://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=',
+    'USPS' => 'https://tools.usps.com/go/TrackConfirmAction_input?qtc_tLabels1=',
+    'DHL' => 'http://track.dhl-usa.com/TrackByNbr.asp?ShipmentNumber=',
+    'FEDEX' => 'http://www.fedex.com/Tracking?action=track&tracknumbers=',
   );
   return $shippers;
 }
@@ -111,7 +111,7 @@ function commerce_order_tracking_number_mail($order) {
     // No order given.
     return;
   }
-  
+
   $cssfile = drupal_get_path('module', 'commerce_order') . '/theme/commerce_order.theme.css';
   $view_mode = 'customer';
   $htmlString = drupal_render(entity_view('commerce_order', array($order->order_id => $order), $view_mode, NULL, TRUE));
@@ -138,28 +138,28 @@ function commerce_order_tracking_number_mail($order) {
   }
 
   $content = $dom->saveHTML();
-  
+
   // drupal_set_message($content);
 
-  
-  
+
+
   if ($content === false) {
     $content = "";
   }
   $subject = "Order $order->order_id at {$conf['site_name']} has been updated.";
   $mailto = $conf['site_mail'];
-  
+
   $headers  = "MIME-Version: 1.0\n";
   $headers .= "Content-type: text/html; charset=iso-8859-1\n";
   $headers .= "From: " . $conf['site_name'] . " <" . $conf['site_mail'] . ">\n";
   $headers .= "Reply-To: " . $conf['site_mail'] . "\n";
   $headers .= "X-Sender: <" . $conf['site_mail'] . ">\n";
-  $headers .= "X-Mailer: PHP\n"; 
-  $headers .= "X-Priority: 1\n"; 
-  $headers .= "Return-Path: <" . $conf['site_mail'] . ">\n";  
+  $headers .= "X-Mailer: PHP\n";
+  $headers .= "X-Priority: 1\n";
+  $headers .= "Return-Path: <" . $conf['site_mail'] . ">\n";
 
   if(mail($mailto, $subject, $content, $headers) == false) {
       // Error.
   }
-    
+
 }

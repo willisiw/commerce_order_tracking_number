@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Admin page callback for the commerce order tracking number module.
+ * Admin settings for the commerce order tracking number module.
  */
 
 /**
@@ -9,7 +9,7 @@
  */
 function commerce_order_tracking_number_admin_settings() {
   $helptxt = '';
-  $links = commerce_order_tracking_number_menu();  
+  $links = commerce_order_tracking_number_menu();
   foreach ($links as $link => $v) {
     $helptxt .= '<p>' . l($v['title'] . ' - ' . $v['description'],$link) . '</p>';
   }

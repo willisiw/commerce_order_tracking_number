@@ -6,11 +6,11 @@
 
 /**
  * Store admin page for creating an order tracking number.
- * 
+ *
  * /?q=admin/commerce/orders/tracking page.
  */
 function commerce_order_tracking_number_admin_page() {
-  // Tracking my orders  
+  // Tracking my orders
   $query = db_select('commerce_order', 'c');
   $query
     ->fields('c')
@@ -38,33 +38,31 @@ function commerce_order_tracking_number_admin_page() {
     $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
 
     if ($row->t_tracking_id != '') {
-
-        $shipped = $row->t_tracking_id;
-        $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
-      
+      $shipped = $row->t_tracking_id;
+      $shiplink =  l($shipped, 'admin/commerce/orders/' . $this_order->order_id . '/track');
     }
 
     $rows[] = array(
-          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .  
-          l($this_order->order_id, 'admin/commerce/orders/' . $this_order->order_id),
-          l($this_order->mail, 'user/' . $this_order->uid),
-          $this_user_profile->commerce_customer_address['und']['0']['locality'] . ', ' .
-          $this_user_profile->commerce_customer_address['und']['0']['administrative_area'] . ' ' .
-          $this_user_profile->commerce_customer_address['und']['0']['postal_code'],
-          format_date($row->changed),
-          $row->t_shipper_name ,
-          $shiplink
+      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .
+      l($this_order->order_id, 'admin/commerce/orders/' . $this_order->order_id),
+      l($this_order->mail, 'user/' . $this_order->uid),
+      $this_user_profile->commerce_customer_address['und']['0']['locality'] . ', ' .
+      $this_user_profile->commerce_customer_address['und']['0']['administrative_area'] . ' ' .
+      $this_user_profile->commerce_customer_address['und']['0']['postal_code'],
+      format_date($row->changed),
+      $row->t_shipper_name ,
+      $shiplink
     );
 
   }
   if (empty($rows)) {
     $rows[] = array(
-          '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#676767"></div>',
-          t('No orders have tracking numbers, or you have no active orders.'),
-          '',
-          '',
-          '',
-          '',
+      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#676767"></div>',
+      t('No orders have tracking numbers, or you have no active orders.'),
+      '',
+      '',
+      '',
+      '',
     );
   }
     $header = array('Order ID', 'Customer', 'Ship To', 'Updated', 'Shipped With', 'Shipped');
@@ -77,7 +75,7 @@ function commerce_order_tracking_number_admin_page() {
 
 /**
  * User page to see orders with tracking numbers.
- * 
+ *
  * /?q=user/%userid/order_tracking
  */
 function commerce_order_tracking_number_user_page() {
@@ -118,14 +116,14 @@ function commerce_order_tracking_number_user_page() {
         $url = $shippers[$row->t_shipper_name] . $row->t_tracking_id;
       }
       else {
-        $url = "#";  
+        $url = "#";
       }
 
       $shiplink =  l($row->t_tracking_id, $url);
     }
 
     $rows[] = array(
-      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .  
+      '<div style="width:20px;height:20px;float:left;margin-right:10px;background:#' . $color . '"></div>' .
       l($this_order->order_id, 'user/' . $user->uid . '/orders/' . $this_order->order_id),
       $this_user_profile->commerce_customer_address['und']['0']['locality'] . ', ' .
       $this_user_profile->commerce_customer_address['und']['0']['administrative_area'] . ' ' .
@@ -156,7 +154,7 @@ function commerce_order_tracking_number_user_page() {
 
 /**
  * Shipping Form to add a single tracking number.
- * 
+ *
  * /?q=admin/commerce/orders/%order_id/ship
  */
 function commerce_order_tracking_number_form($form, &$form_state, $order) {
@@ -259,7 +257,7 @@ function commerce_order_tracking_number_form_submit($form, &$form_state) {
     return;
   }
 
-  if ($tracking_id == $form['tracking']['tracking_id']['#value']) { 
+  if ($tracking_id == $form['tracking']['tracking_id']['#value']) {
     // dpm('No Change in tracking number.');
   }
 
@@ -272,7 +270,7 @@ function commerce_order_tracking_number_form_submit($form, &$form_state) {
   }
   else {
     $logmessage = "Added $shippedwith tracking number $tracking_id to order number $order_id.";
-    // Delete any existing tracking numbers.  
+    // Delete any existing tracking numbers.
     // This will need to be removed to allow multiple packages.
     // TODO Figure out how to allow multiple packages per order.
     db_delete('commerce_order_tracking_number')
@@ -306,7 +304,6 @@ function commerce_order_tracking_number_form_submit($form, &$form_state) {
   }
 
   // commerce_order_tracking_number_mail($this_order)
-
   drupal_goto('admin/commerce/orders/tracking');
 
   return;

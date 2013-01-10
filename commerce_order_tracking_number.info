@@ -1,5 +1,5 @@
 name = "Commerce Order Tracking"
-description = "This module adds a few pages for adding a tracking number for an order.  A user tab will display for the user who placed the order."
-package = z Commerce
+description = "This module allows a single package tracking number for an order.  A user tab will display for the user who placed the order."
+package = Commerce (Contrib)
 core = 7.x
 configure = admin/commerce/config/commerce_order_tracking
